@@ -9,7 +9,10 @@ pub enum IntervalType {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Interval<T> {
+pub struct Interval<T>
+where
+    T: Ord,
+{
     start: BoundPoint<T>,
     end: BoundPoint<T>,
 }
@@ -24,20 +27,20 @@ impl<T: PartialOrd> Interval<T> {
         Self::validate(&start, &end)?;
         match interval_type {
             IntervalType::Open => Ok(Interval {
-                start: BoundPoint::new_after(start),
-                end: BoundPoint::new_before(end),
+                start: BoundPoint::after(start),
+                end: BoundPoint::before(end),
             }),
             IntervalType::StartOpen => Ok(Interval {
-                start: BoundPoint::new_after(start),
-                end: BoundPoint::new_at(end),
+                start: BoundPoint::after(start),
+                end: BoundPoint::at(end),
             }),
             IntervalType::EndOpen => Ok(Interval {
-                start: BoundPoint::new_at(start),
-                end: BoundPoint::new_before(end),
+                start: BoundPoint::at(start),
+                end: BoundPoint::before(end),
             }),
             IntervalType::Close => Ok(Interval {
-                start: BoundPoint::new_at(start),
-                end: BoundPoint::new_at(end),
+                start: BoundPoint::at(start),
+                end: BoundPoint::at(end),
             }),
         }
     }
@@ -51,7 +54,7 @@ impl<T: PartialOrd> Interval<T> {
     }
 
     pub fn contains(&self, value: T) -> bool {
-        let bound_point = BoundPoint::new_at(value);
+        let bound_point = BoundPoint::at(value);
         self.start <= bound_point && self.end >= bound_point
     }
 
