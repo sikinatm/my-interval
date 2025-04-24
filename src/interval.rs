@@ -136,14 +136,40 @@ mod tests {
     }
 
     #[rstest]
+    // 1. Boundary-type combinations:
+    //    - Both Open
+    //    - One Close, another Open
+    //    - Both Close
+    //
+    // 2. Positional relationships between the two intervals:
+    //    - identical open intervals overlap
+    //    - one interval completely inside another
+    //    - touch at one start point
+    //    - completely disjoint
+    //    - touch at one end point
+    //    - partial overlap inside
+
+    // Both Open
     #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(0, 3, IntervalType::Open).unwrap(),  true)]
     #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(1, 2, IntervalType::Open).unwrap(),  true)]
     #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(-1, 0, IntervalType::Open).unwrap(),  false)]
     #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(-2, -1, IntervalType::Open).unwrap(),  false)]
     #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(3, 4, IntervalType::Open).unwrap(),  false)]
-    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(4, 5, IntervalType::Open).unwrap(),  false)]
     #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(-1, 2, IntervalType::Open).unwrap(),  true)]
-    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(2, 4, IntervalType::Open).unwrap(),  true)]
+    // One Close. Another Open
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(0, 3, IntervalType::Open).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(1, 2, IntervalType::Open).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(-1, 0, IntervalType::Open).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(-2, -1, IntervalType::Open).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(3, 4, IntervalType::Open).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(-1, 2, IntervalType::Open).unwrap(),  true)]
+    // Both Close
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(0, 3, IntervalType::Close).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(1, 2, IntervalType::Close).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(-1, 0, IntervalType::Close).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(-2, -1, IntervalType::Close).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(3, 4, IntervalType::Close).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Close).unwrap(), Interval::from_to(-1, 2, IntervalType::Close).unwrap(),  true)]
     fn test_overlaps(
         #[case] interval: Interval<i32>,
         #[case] other: Interval<i32>,
