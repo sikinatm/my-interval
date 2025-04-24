@@ -22,8 +22,8 @@ pub enum IntervalError {
     StartMustBeMinorThanEnd,
 }
 
-impl<T: PartialOrd> Interval<T> {
     pub fn new(start: T, end: T, interval_type: IntervalType) -> Result<Self, IntervalError> {
+impl<T: Ord> Interval<T> {
         Self::validate(&start, &end)?;
         match interval_type {
             IntervalType::Open => Ok(Interval {
@@ -42,6 +42,34 @@ impl<T: PartialOrd> Interval<T> {
                 start: BoundPoint::at(start),
                 end: BoundPoint::at(end),
             }),
+        }
+    }
+
+    pub fn since_exclusive(value: T) -> Self {
+        Interval {
+            start: BoundPoint::after(value),
+            end: BoundPoint::pos_infinity(),
+        }
+    }
+
+    pub fn since_inclusive(value: T) -> Self {
+        Interval {
+            start: BoundPoint::at(value),
+            end: BoundPoint::pos_infinity(),
+        }
+    }
+
+    pub fn until_exclusive(value: T) -> Self {
+        Interval {
+            start: BoundPoint::neg_infinity(),
+            end: BoundPoint::before(value),
+        }
+    }
+
+    pub fn until_inclusive(value: T) -> Self {
+        Interval {
+            start: BoundPoint::neg_infinity(),
+            end: BoundPoint::at(value),
         }
     }
 
@@ -83,6 +111,21 @@ mod tests {
     #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 2,  true)]
     #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 0,  false)]
     #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 4,  false)]
+    #[case(Interval::from_to(1, 3, IntervalType::Close).unwrap(), 4,  false)]
+    // until
+    #[case(Interval::until_exclusive(1), 0,  true)]
+    #[case(Interval::until_exclusive(1), 1,  false)]
+    #[case(Interval::until_exclusive(1), 2,  false)]
+    #[case(Interval::until_inclusive(1), 0,  true)]
+    #[case(Interval::until_inclusive(1), 1,  true)]
+    #[case(Interval::until_inclusive(1), 2,  false)]
+    // since
+    #[case(Interval::since_exclusive(1), 0,  false)]
+    #[case(Interval::since_exclusive(1), 1,  false)]
+    #[case(Interval::since_exclusive(1), 2,  true)]
+    #[case(Interval::since_inclusive(1), 0,  false)]
+    #[case(Interval::since_inclusive(1), 1,  true)]
+    #[case(Interval::since_inclusive(1), 2,  true)]
     fn test_contains(#[case] interval: Interval<i32>, #[case] value: i32, #[case] expected: bool) {
         let actual = interval.contains(value);
         assert_eq!(
