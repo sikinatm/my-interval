@@ -22,8 +22,8 @@ pub enum IntervalError {
     StartMustBeMinorThanEnd,
 }
 
-    pub fn new(start: T, end: T, interval_type: IntervalType) -> Result<Self, IntervalError> {
 impl<T: Ord> Interval<T> {
+    pub fn from_to(start: T, end: T, interval_type: IntervalType) -> Result<Self, IntervalError> {
         Self::validate(&start, &end)?;
         match interval_type {
             IntervalType::Open => Ok(Interval {
@@ -97,20 +97,20 @@ mod tests {
     use rstest::rstest;
 
     #[rstest]
-    #[case(Interval::new(1, 3, IntervalType::Open).unwrap(), 1,  false)]
-    #[case(Interval::new(1, 3, IntervalType::Open).unwrap(), 3,  false)]
-    #[case(Interval::new(1, 3, IntervalType::Open).unwrap(), 2,  true)]
-    #[case(Interval::new(1, 3, IntervalType::StartOpen).unwrap(), 1,  false)]
-    #[case(Interval::new(1, 3, IntervalType::StartOpen).unwrap(), 3,  true)]
-    #[case(Interval::new(1, 3, IntervalType::StartOpen).unwrap(), 2,  true)]
-    #[case(Interval::new(1, 3, IntervalType::EndOpen).unwrap(), 1,  true)]
-    #[case(Interval::new(1, 3, IntervalType::EndOpen).unwrap(), 3,  false)]
-    #[case(Interval::new(1, 3, IntervalType::EndOpen).unwrap(), 2,  true)]
-    #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 1,  true)]
-    #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 3,  true)]
-    #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 2,  true)]
-    #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 0,  false)]
-    #[case(Interval::new(1, 3, IntervalType::Close).unwrap(), 4,  false)]
+    // from to
+    #[case(Interval::from_to(1, 3, IntervalType::Open).unwrap(), 1,  false)]
+    #[case(Interval::from_to(1, 3, IntervalType::Open).unwrap(), 3,  false)]
+    #[case(Interval::from_to(1, 3, IntervalType::Open).unwrap(), 2,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::StartOpen).unwrap(), 1,  false)]
+    #[case(Interval::from_to(1, 3, IntervalType::StartOpen).unwrap(), 3,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::StartOpen).unwrap(), 2,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::EndOpen).unwrap(), 1,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::EndOpen).unwrap(), 3,  false)]
+    #[case(Interval::from_to(1, 3, IntervalType::EndOpen).unwrap(), 2,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::Close).unwrap(), 1,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::Close).unwrap(), 3,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::Close).unwrap(), 2,  true)]
+    #[case(Interval::from_to(1, 3, IntervalType::Close).unwrap(), 0,  false)]
     #[case(Interval::from_to(1, 3, IntervalType::Close).unwrap(), 4,  false)]
     // until
     #[case(Interval::until_exclusive(1), 0,  true)]
@@ -136,14 +136,14 @@ mod tests {
     }
 
     #[rstest]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(0, 3, IntervalType::Open).unwrap(),  true)]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(1, 2, IntervalType::Open).unwrap(),  true)]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(-1, 0, IntervalType::Open).unwrap(),  false)]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(-2, -1, IntervalType::Open).unwrap(),  false)]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(3, 4, IntervalType::Open).unwrap(),  false)]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(4, 5, IntervalType::Open).unwrap(),  false)]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(-1, 2, IntervalType::Open).unwrap(),  true)]
-    #[case(Interval::new(0, 3, IntervalType::Open).unwrap(), Interval::new(2, 4, IntervalType::Open).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(0, 3, IntervalType::Open).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(1, 2, IntervalType::Open).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(-1, 0, IntervalType::Open).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(-2, -1, IntervalType::Open).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(3, 4, IntervalType::Open).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(4, 5, IntervalType::Open).unwrap(),  false)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(-1, 2, IntervalType::Open).unwrap(),  true)]
+    #[case(Interval::from_to(0, 3, IntervalType::Open).unwrap(), Interval::from_to(2, 4, IntervalType::Open).unwrap(),  true)]
     fn test_overlaps(
         #[case] interval: Interval<i32>,
         #[case] other: Interval<i32>,
