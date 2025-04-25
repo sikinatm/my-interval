@@ -5,6 +5,10 @@ edition = "2021"
 authors = ["sikinatm"]
 license = "MIT OR Apache-2.0"
 
+description = "A study-oriented Rust crate for interval utilities"
+repository = "https://github.com/sikinatm/my-interval"
+homepage = "https://github.com/sikinatm/my-interval"
+
 [dependencies]
 
 [dev-dependencies]
